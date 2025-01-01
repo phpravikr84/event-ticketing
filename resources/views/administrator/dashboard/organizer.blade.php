@@ -9,7 +9,7 @@
             <h4 class="mb-sm-0">Dashboard - Organizer</h4>
             <div class="page-title-right">
                 <ol class="breadcrumb m-0">
-                    <li class="breadcrumb-item"><a href="#">Home</a></li>
+                    <li class="breadcrumb-item"><a href="{{ URL::to('/') }}">Home</a></li>
                     <li class="breadcrumb-item active">Dashboard - Organizer</li>
                 </ol>
             </div>

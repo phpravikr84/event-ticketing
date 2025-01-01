@@ -30,4 +30,18 @@ class Event extends Model
     {
         return $this->hasMany(Payment::class);
     }
+
+    public function ticketTypes()
+    {
+        return $this->hasMany(TicketType::class);
+    }
+
+
+    protected static function booted()
+    {
+        static::deleting(function ($event) {
+            // Delete related tickets before deleting the event
+            $event->tickets()->delete();
+        });
+    }
 }

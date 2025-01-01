@@ -21,7 +21,12 @@
 @section('content')
 <div class="row">
     <a href="{{ route('events.create') }}" class="btn btn-primary">Create New Event</a>
-
+        if($errors->any())
+            @foreach ($errors->all() as $error)
+            <div class="alert alert-danger">{{ $error }}</div>                    
+                {{ $error }}
+            </div>
+        @endforeach
     <table class="table">
         <thead>
             <tr>

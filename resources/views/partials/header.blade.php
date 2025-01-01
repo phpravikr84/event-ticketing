@@ -32,6 +32,7 @@
                             </div>
                         </form>
                     </div>
+                    @if(auth()->user())
                     <div class="d-flex">
                         <div class="dropdown d-inline-block user-dropdown">
                             <button type="button" class="btn header-item waves-effect" id="page-header-user-dropdown"
@@ -50,8 +51,8 @@
                                     <i class="ri-shut-down-line align-middle me-1 text-danger"></i> Logout
                                 </a>
                             </div>
-
                         </div>
                     </div>
+                    @endif
                 </div>
             </header>

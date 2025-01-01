@@ -5,10 +5,11 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\OrganizerController;
 use App\Http\Controllers\EventController;
+use App\Http\Controllers\HomeController;
 // Route::get('/', function () {
 //     return view('welcome');
 // });
-Route::get('/', [AuthController::class, 'showLogin'])->name('login');
+Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
 Route::post('/register', [AuthController::class, 'register']);
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
@@ -30,4 +31,13 @@ Route::middleware(['role:organizer'])->group(function () {
     Route::get('/reports', [OrganizerController::class, 'reports'])->name('reports.index');
     Route::get('/dashboard', [OrganizerController::class, 'dashboard'])->name('organizer.dashboard');
     Route::get('/events/manage', [OrganizerController::class, 'manageEvents'])->name('organizer.events');
+});
+
+// Attendee Routes
+Route::middleware(['role:attendee'])->group(function () {
+    Route::get('/events/{id}/book', [HomeController::class, 'bookNow'])->name('events.book');
+    Route::post('/cart/add', [CartController::class, 'addToCart'])->name('cart.add');
+    Route::get('/cart', [CartController::class, 'viewCart'])->name('cart.view');
+    Route::post('/checkout', [CheckoutController::class, 'processCheckout'])->name('checkout.process');
+    Route::get('/booking/{id}', [BookingController::class, 'show'])->name('booking.details');
 });

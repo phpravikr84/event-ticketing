@@ -21,9 +21,12 @@
 @section('content')
 <form action="{{ route('events.store') }}" method="POST" id="eventForm">
         @csrf
-        @if(session('error'))
-            <div class="alert alert-danger">{{ session('error') }}</div>
-        @endif
+        if($errors->any())
+        @foreach ($errors->all() as $error)
+        <div class="alert alert-danger">{{ $error }}</div>                    
+            {{ $error }}
+        </div>
+        @endforeach
 
         <div class="mb-3">
             <label for="title" class="form-label">Event Title</label>

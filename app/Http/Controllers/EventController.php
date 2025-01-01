@@ -139,7 +139,7 @@ class EventController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'date' => 'required|date|after_or_equal:today',
+            'event_date' => 'required|date|after_or_equal:today',
             'location' => 'required|string|max:255',
             'tickets' => 'required|array',
             'tickets.*.id' => 'nullable|exists:tickets,id',
@@ -148,24 +148,33 @@ class EventController extends Controller
             'tickets.*.quantity' => 'required|integer|min:1',
         ]);
 
+
         // Update event details
         $event->update([
             'title' => $validated['title'],
             'description' => $validated['description'],
-            'date' => $validated['date'],
+            'event_date' => $validated['event_date'],
             'location' => $validated['location'],
         ]);
 
+        //dd($validated);
+        $totalTicketAvailability = 0;
+        
         // Process tickets
         foreach ($validated['tickets'] as $ticketData) {
+             // Log ticket creation
+             Log::info('Ticket for event: ', ['ticket_id' => $ticketData['id']]);
             if (isset($ticketData['id'])) {
                 // Update existing ticket
                 $ticket = Ticket::findOrFail($ticketData['id']);
+                
                 $ticket->update([
                     'type' => $ticketData['type'],
                     'price' => $ticketData['price'],
                     'quantity' => $ticketData['quantity'],
                 ]);
+                   // Add to the total ticket availability
+                   $totalTicketAvailability += $ticketData['quantity'];
             } else {
                 // Create new ticket
                 Ticket::create([
@@ -174,8 +183,17 @@ class EventController extends Controller
                     'price' => $ticketData['price'],
                     'quantity' => $ticketData['quantity'],
                 ]);
+
+                 // Add to the total ticket availability
+                 $totalTicketAvailability += $ticketData['quantity'];
             }
         }
+
+         // Update the event's ticket availability
+         DB::table('events')->where('id', $event->id)->update([
+            'ticket_availability' => $totalTicketAvailability,
+            'updated_at' => now(),
+        ]);
 
         return redirect()->route('events.index')->with('success', 'Event updated successfully.');
     }
@@ -184,8 +202,16 @@ class EventController extends Controller
     // Cancel an event
     public function destroy(Event $event)
     {
-        $this->authorize('delete', $event);
-        $event->delete();
-        return redirect()->route('events.index')->with('success', 'Event canceled successfully.');
+        // Check if event exists
+        if ($this->authorize('delete', $event)) {
+            // Debugging
+           
+            // Authorization passed
+            $event->delete();
+            return redirect()->route('events.index')->with('success', 'Event canceled successfully.');
+        } else {
+            // Authorization failed
+            return redirect()->route('events.index')->with('error', 'You are not authorized to delete this event.');
+        }
     }
 }

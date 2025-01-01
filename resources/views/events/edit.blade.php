@@ -22,9 +22,12 @@
 <form action="{{ route('events.update', $event->id) }}" method="POST" id="eventForm">
         @csrf
         @method('PUT')
-        @if(session('error'))
-            <div class="alert alert-danger">{{ session('error') }}</div>
-        @endif
+        if($errors->any())
+        @foreach ($errors->all() as $error)
+        <div class="alert alert-danger">{{ $error }}</div>                    
+            {{ $error }}
+        </div>
+        @endforeach
 
         <div class="mb-3">
             <label for="title" class="form-label">Event Title</label>
@@ -56,7 +59,7 @@
                         <input type="hidden" name="tickets[{{ $loop->index }}][id]" value="{{ $ticket->id }}">
                         <div class="col-md-4">
                             <label for="ticketType[]" class="form-label">Ticket Type</label>
-                            <select class="form-control" name="tickets[{{ $loop->index }}][type]" disabled="true" required >
+                            <select class="form-control" name="tickets[{{ $loop->index }}][type]" required >
                                 <option value="Early Bird" {{ $ticket->type == 'Early Bird' ? 'selected' : '' }}>Early Bird</option>
                                 <option value="Regular" {{ $ticket->type == 'Regular' ? 'selected' : '' }}>Regular</option>
                                 <option value="VIP" {{ $ticket->type == 'VIP' ? 'selected' : '' }}>VIP</option>
