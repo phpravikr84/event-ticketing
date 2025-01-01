@@ -1,68 +1,75 @@
-# Online Event Ticketing System
+# Event Ticketing App
 
-An online event ticketing system that allows users to create, manage, and attend events. The system handles event creation, ticket sales, attendee management, and payment integration.
+An efficient and user-friendly event ticketing application that allows organizers to create and manage events, and attendees to browse and purchase tickets.
+
+---
 
 ## Features
 
-- **User Authentication and Registration**
+### User Authentication and Registration
+- **User Registration and Login:** 
   - Users can register and log in.
-  - Implemented user roles: 
-    - Organizers
-    - Attendees
+- **Roles Implemented:**
+  - Organizers
+  - Attendees
+- **Data Security:**
   - Personal information of users is encrypted.
-  
-- **Event Creation and Management**
-  - Authenticated users (Organizers) can create, edit, and cancel events.
-  - Event details include:
-    - Title
-    - Description
-    - Date
-    - Location
-    - Ticket Availability
-  
-- **Ticket Sales**
-  - Users (Attendees) can purchase event tickets.
-  - Multiple ticket types (e.g., Early Bird, Regular, VIP).
-  - Handle ticket availability and pricing.
-  
-- **Attendee Management**
-  - Organizers can view a list of attendees for their events.
-  - Send email confirmations to attendees after ticket purchase.
-  
-- **Payment Integration**
-  - Optional fake payment gateway integration for ticket purchases.
-  - Handle successful and failed transactions.
-  
-- **Event Search and Discovery**
-  - Users can search for events based on:
-    - Keywords
-    - Location
-    - Date
-  - Display upcoming events on the homepage.
-  
-- **Event Details Page**
-  - Detailed information about an event, including ticket types and availability.
-  - Users can ask questions or leave comments.
-  - Export functionality to get event lists with details in an Excel sheet.
-  
-- **Security and Authorization**
-  - Only event organizers can edit or cancel their events.
-  - Input validation to prevent malicious data.
-  
-- **Performance Optimization**
-  - Optimized database queries using Eloquent and raw queries.
-  - Implemented caching for frequently accessed data (e.g., event lists).
 
-## Installation Instructions
+### Event Creation and Management
+- **For Organizers:**
+  - Authenticated users can create, edit, and cancel events.
+- **Event Details Include:**
+  - Title
+  - Description
+  - Date
+  - Location
+  - Ticket Availability
 
-### Prerequisites
-Before you begin, make sure you have the following installed:
-- **PHP 8.1 or higher**
-- **Composer**
-- **Laravel 11**
-- **MySQL or any preferred database**
+### Ticket Sales
+- **For Attendees:**
+  - Users can purchase tickets for events.
+- **Ticket Management:**
+  - Support for multiple ticket types (e.g., Early Bird, Regular, VIP).
+  - Handles ticket availability and pricing.
 
-### Step 1: Clone the Repository
-```bash
-git clone https://github.com/your-repository/online-event-ticketing.git
-cd online-event-ticketing
+### Attendee Management
+- **For Organizers:**
+  - View a list of attendees for their events.
+
+### Event Details Page
+- Provides detailed information about events, including ticket types and availability.
+
+---
+
+## Quick Start
+
+### Demo Links
+- **Application Home:**  
+  [Event Ticketing App](https://happyoralcare.com/event-ticketing/public/)
+- **Login Page:**  
+  [Login to Event Ticketing App](https://happyoralcare.com/event-ticketing/public/login)
+
+### Test Credentials
+
+#### Organizer:
+- **Username:** `org01@gmail.com`  
+- **Password:** `123456789`
+
+#### Attendee:
+- **Username:** `a01@gmail.com`  
+- **Password:** `123456789`
+
+---
+
+## GitHub Repository
+- **Link:** [Event Ticketing App Repository](https://github.com/phpravikr84/event-ticketing)
+
+---
+
+## Contribution
+Contributions are welcome! Please fork the repository and submit a pull request with your changes.
+
+---
+
+## License
+This project is licensed under the [MIT License](LICENSE).
