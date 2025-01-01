@@ -20,14 +20,45 @@
 
 @section('content')
 <div class="container">
-    <h2>Booking Details</h2>
-    <p><strong>Event:</strong> {{ $booking->event->title }}</p>
-    <p><strong>Tickets:</strong></p>
-    <ul>
-        @foreach(json_decode($booking->details, true) as $ticket)
-            <li>Type: {{ $ticket['ticket_type'] }} | Quantity: {{ $ticket['quantity'] }}</li>
-        @endforeach
-    </ul>
-    <p><strong>Payment Method:</strong> {{ ucfirst($booking->payment_method) }}</p>
+    <h1>Booking Details</h1>
+
+    @if(session('success'))
+        <div class="alert alert-success">
+            {{ session('success') }}
+        </div>
+    @endif
+
+    <table class="table table-bordered" id="bookingsTable">
+        <thead>
+            <tr>
+                <th>Event</th>
+                <th>Ticket</th>
+                <th>Quantity</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th>Booking Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach($bookings as $booking)
+            <tr>
+                <td>{{ $booking->event->title }}</td>
+                <td>{{ $booking->ticket->type }}</td>
+                <td>{{ $booking->booking_quantity }}</td>
+                <td>{{ $booking->amount }}</td>
+                <td>{{ ucfirst($booking->status) }}</td>
+                <td>{{ $booking->created_at->format('Y-m-d H:i') }}</td>
+            </tr>
+            @endforeach
+        </tbody>
+    </table>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    $(document).ready(function () {
+        $('#bookingsTable').DataTable();
+    });
+</script>
+@endpush

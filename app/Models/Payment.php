@@ -10,10 +10,21 @@ class Payment extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['event_id', 'user_id', 'amount', 'status'];
+    protected $fillable = ['event_id', 'user_id', 'ticket_id', 'booking_quantity', 'amount', 'status'];
 
+    // public function event()
+    // {
+    //     return $this->belongsTo(Event::class);
+    // }
     public function event()
     {
-        return $this->belongsTo(Event::class);
+        return $this->belongsTo(Event::class, 'event_id');
     }
+
+    public function ticket()
+    {
+        return $this->belongsTo(Ticket::class, 'ticket_id');
+    }
+
+    
 }

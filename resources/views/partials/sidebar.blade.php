@@ -30,7 +30,7 @@
                 <!-- Admin-Specific Links -->
                 <li>
                     <a href="{{ route('administrator.dashboard.admin') }}">
-                        <i class="ri-dashboard-line"></i> Admin Dashboard
+                        <i class="ri-dashboard-line"></i> Dashboard
                     </a>
                 </li>
             @endif
@@ -39,7 +39,7 @@
                 <!-- Organizer-Specific Links -->
                 <li>
                     <a href="{{ route('administrator.dashboard.organizer') }}">
-                        <i class="ri-dashboard-line"></i> Organizer Dashboard
+                        <i class="ri-dashboard-line"></i> Dashboard
                     </a>
                 </li>
                 <li>
@@ -60,33 +60,30 @@
                 </li>
                 <li>
                     <a href="{{ route('attendees.index') }}">
-                        <i class="ri-group-line"></i> Attendee Management
+                        <i class="ri-group-line"></i> Attendees
                     </a>
                 </li>
-                <li>
+                <!-- <li>
                     <a href="{{ route('reports.index') }}">
                         <i class="ri-file-chart-line"></i> Reports
                     </a>
-                </li>
+                </li> -->
             @endif
 
             @if(auth()->user()->role->name === 'attendee')
                 <!-- Attendee-Specific Links -->
                 <li>
                     <a href="{{ route('administrator.dashboard.attendee') }}">
-                        <i class="ri-dashboard-line"></i> Attendee Dashboard
+                        <i class="ri-dashboard-line"></i> Dashboard
                     </a>
                 </li>
+
                 <li>
-                    <a href="{{ route('my.tickets') }}">
-                        <i class="ri-ticket-line"></i> My Tickets
+                    <a href="{{ route('booking.details') }}">
+                        <i class="ri-group-line"></i> My Bookings
                     </a>
                 </li>
-                <li>
-                    <a href="{{ route('events.discover') }}">
-                        <i class="ri-search-line"></i> Discover Events
-                    </a>
-                </li>
+             
             @endif
             
         </ul>

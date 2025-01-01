@@ -9,7 +9,9 @@
             <h4 class="mb-sm-0">Home</h4>
             <div class="page-title-right">
                 <ol class="breadcrumb m-0">
-                    <li class="breadcrumb-item"><a href="{{ URL::to('/') }}">Home</a></li>
+                    @if(auth()->user() && auth()->user()->role_id==2)
+                        <li class="breadcrumb-item"><a href="{{ route('administrator.dashboard.attendee') }}">Dashboard</a></li>
+                    @endif
                 </ol>
             </div>
         </div>

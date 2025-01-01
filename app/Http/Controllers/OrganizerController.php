@@ -7,6 +7,7 @@ use App\Models\Event;
 use App\Models\Ticket;
 use App\Models\Attendee;
 use App\Models\Payment;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
 class OrganizerController extends Controller
@@ -30,17 +31,37 @@ class OrganizerController extends Controller
         return view('organizer.events', compact('events'));
     }
 
-    public function ticketSales()
+    public function showTicketSales()
     {
-        $events = $this->getOrganizerEvents()->load('tickets');
-        $tickets = $events->flatMap->tickets;
-        return view('organizer.ticket_sales', compact('tickets'));
-    }
+        // Get all events created by the authenticated organizer
+        $events = Event::where('organizer_id', Auth::user()->id)->get();
+    
+        // Check if events exist
+        if ($events->isEmpty()) {
+            return redirect()->route('organizer.events')->with('error', 'No events found for this organizer.');
+        }
+    
+        // Get all payment records related to these events
+        $payments = Payment::whereIn('payments.event_id', $events->pluck('id'))  // Get payments for all events of the organizer
+                           ->join('users', 'users.id', '=', 'payments.user_id')  // Join with users to get user name
+                           ->join('tickets', 'tickets.id', '=', 'payments.ticket_id')  // Join with tickets to get ticket details
+                           ->select('users.name as user_name', 'tickets.type as ticket_type', 'payments.booking_quantity', 'payments.amount', 'payments.status', 'payments.event_id')
+                           ->get();
+    
+        // Group the payments by event_id
+        $paymentsGrouped = $payments->groupBy('event_id');
+    
+        // Return the view with events and grouped payment data
+        return view('organizer.ticket-sales', compact('events', 'paymentsGrouped'));
+    }    
+
+
 
     public function attendees()
     {
-        $events = $this->getOrganizerEvents()->load('attendees');
-        $attendees = $events->flatMap->attendees;
+        // Get all users who have role_id = 2 and are associated with any of the organizer's events
+        $attendees = User::where('role_id', 2)->get();
+
         return view('organizer.attendees', compact('attendees'));
     }
 
