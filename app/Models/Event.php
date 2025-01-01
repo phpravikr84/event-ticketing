@@ -10,6 +10,10 @@ class Event extends Model
 {
     use HasFactory;
 
+    protected $casts = [
+        'event_date' => 'datetime',
+    ];
+
     protected $fillable = ['organizer_id', 'title', 'description', 'event_date', 'location', 'ticket_availability'];
 
     public function tickets()

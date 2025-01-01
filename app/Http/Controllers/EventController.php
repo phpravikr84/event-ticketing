@@ -2,16 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use DB;
 use App\Models\Event;
 use App\Models\Ticket;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 
 class EventController extends Controller
 {
+    use AuthorizesRequests; // Include this trait
+
     // Display a list of events
     public function index()
     {
@@ -43,46 +46,57 @@ class EventController extends Controller
             // Start a transaction
             DB::beginTransaction();
 
-            // Create the event
-            $event = Event::create([
+            // Insert the event into the database
+            $eventId = DB::table('events')->insertGetId([
                 'title' => $validated['title'],
                 'description' => $validated['description'],
                 'event_date' => $validated['event_date'],
                 'location' => $validated['location'],
                 'organizer_id' => Auth::user()->id,
+                'created_at' => now(),
+                'updated_at' => now(),
             ]);
 
             // Log event creation
-            Log::info('Event created successfully: ', ['event_id' => $event->id]);
+            Log::info('Event created successfully: ', ['event_id' => $eventId]);
 
-            // Create tickets for the event
+            // Insert tickets for the event
             $ticketTypes = $validated['ticketType'];
             $ticketPrices = $validated['ticketPrice'];
             $ticketQuantities = $validated['ticketQuantity'];
+            $totalTicketAvailability = 0;
 
             foreach ($ticketTypes as $index => $type) {
-                // Create each ticket type for the event
-                $ticket = Ticket::create([
-                    'event_id' => $event->id,
+                DB::table('tickets')->insert([
+                    'event_id' => $eventId,
                     'type' => $type,
                     'price' => $ticketPrices[$index],
                     'quantity' => $ticketQuantities[$index],
+                    'created_at' => now(),
+                    'updated_at' => now(),
                 ]);
 
+                 // Add to the total ticket availability
+                $totalTicketAvailability += $ticketQuantities[$index];
                 // Log ticket creation
-                Log::info('Ticket created successfully: ', ['ticket_id' => $ticket->id]);
+                Log::info('Ticket created successfully for event: ', ['event_id' => $eventId, 'type' => $type]);
             }
+
+             // Update the event's ticket availability
+            DB::table('events')->where('id', $eventId)->update([
+                'ticket_availability' => $totalTicketAvailability,
+                'updated_at' => now(),
+            ]);
 
             // Commit the transaction
             DB::commit();
 
             // Redirect back with a success message
             return redirect()->route('events.index')->with('success', 'Event created successfully.');
-            
         } catch (\Exception $e) {
             // Rollback transaction if anything fails
             DB::rollBack();
-            
+
             // Log the error for debugging purposes
             Log::error('Event creation failed: ', [
                 'error_message' => $e->getMessage(),
@@ -94,6 +108,20 @@ class EventController extends Controller
         }
     }
 
+    // View Event
+    public function view($id)
+    {
+        // Fetch the event and its associated tickets
+        $event = DB::table('events')->where('id', $id)->first();
+        $tickets = DB::table('tickets')->where('event_id', $id)->get();
+
+        // Check if the event exists
+        if (!$event) {
+            return redirect()->route('events.index')->withErrors('Event not found.');
+        }
+
+        return view('events.view', compact('event', 'tickets'));
+    }
 
 
     // Show the form to edit an event
@@ -114,12 +142,13 @@ class EventController extends Controller
             'date' => 'required|date|after_or_equal:today',
             'location' => 'required|string|max:255',
             'tickets' => 'required|array',
-            'tickets.*.id' => 'sometimes|exists:tickets,id',
+            'tickets.*.id' => 'nullable|exists:tickets,id',
             'tickets.*.type' => 'required|string|max:50',
             'tickets.*.price' => 'required|numeric|min:0',
             'tickets.*.quantity' => 'required|integer|min:1',
         ]);
 
+        // Update event details
         $event->update([
             'title' => $validated['title'],
             'description' => $validated['description'],
@@ -127,11 +156,18 @@ class EventController extends Controller
             'location' => $validated['location'],
         ]);
 
+        // Process tickets
         foreach ($validated['tickets'] as $ticketData) {
             if (isset($ticketData['id'])) {
-                $ticket = Ticket::find($ticketData['id']);
-                $ticket->update($ticketData);
+                // Update existing ticket
+                $ticket = Ticket::findOrFail($ticketData['id']);
+                $ticket->update([
+                    'type' => $ticketData['type'],
+                    'price' => $ticketData['price'],
+                    'quantity' => $ticketData['quantity'],
+                ]);
             } else {
+                // Create new ticket
                 Ticket::create([
                     'event_id' => $event->id,
                     'type' => $ticketData['type'],
@@ -143,6 +179,7 @@ class EventController extends Controller
 
         return redirect()->route('events.index')->with('success', 'Event updated successfully.');
     }
+
 
     // Cancel an event
     public function destroy(Event $event)

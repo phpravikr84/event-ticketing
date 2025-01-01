@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Events | Veefin')
+@section('title', 'Events | Edit Event')
 
 @section('page-title')
 <div class="row">
@@ -17,12 +17,14 @@
     </div>
 </div>
 @endsection
-<div class="container">
-    <h1>Edit Event</h1>
 
-    <form action="{{ route('events.update', $event->id) }}" method="POST">
+@section('content')
+<form action="{{ route('events.update', $event->id) }}" method="POST" id="eventForm">
         @csrf
         @method('PUT')
+        @if(session('error'))
+            <div class="alert alert-danger">{{ session('error') }}</div>
+        @endif
 
         <div class="mb-3">
             <label for="title" class="form-label">Event Title</label>
@@ -35,8 +37,10 @@
         </div>
 
         <div class="mb-3">
-            <label for="date" class="form-label">Date</label>
-            <input type="date" class="form-control" id="date" name="date" value="{{ old('date', $event->date) }}" required>
+            <label for="event_date" class="form-label">Date</label>
+            <input type="date" class="form-control" id="event_date" name="event_date" 
+                value="{{ old('event_date', $event->event_date ? $event->event_date->format('Y-m-d') : '') }}" 
+                required>
         </div>
 
         <div class="mb-3">
@@ -44,12 +48,37 @@
             <input type="text" class="form-control" id="location" name="location" value="{{ old('location', $event->location) }}" required>
         </div>
 
-        <div class="mb-3">
-            <label for="ticket_availability" class="form-label">Ticket Availability</label>
-            <input type="number" class="form-control" id="ticket_availability" name="ticket_availability" value="{{ old('ticket_availability', $event->ticket_availability) }}" required>
+        <h4>Tickets</h4>
+        <div id="ticketContainer">
+            @foreach ($event->tickets as $ticket)
+                <div class="ticket-row mb-3">
+                    <div class="row">
+                        <input type="hidden" name="tickets[{{ $loop->index }}][id]" value="{{ $ticket->id }}">
+                        <div class="col-md-4">
+                            <label for="ticketType[]" class="form-label">Ticket Type</label>
+                            <select class="form-control" name="tickets[{{ $loop->index }}][type]" disabled="true" required >
+                                <option value="Early Bird" {{ $ticket->type == 'Early Bird' ? 'selected' : '' }}>Early Bird</option>
+                                <option value="Regular" {{ $ticket->type == 'Regular' ? 'selected' : '' }}>Regular</option>
+                                <option value="VIP" {{ $ticket->type == 'VIP' ? 'selected' : '' }}>VIP</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="ticketPrice[]" class="form-label">Price</label>
+                            <input type="number" class="form-control" name="tickets[{{ $loop->index }}][price]" value="{{ $ticket->price }}" min="0" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="ticketQuantity[]" class="form-label">Quantity</label>
+                            <input type="number" class="form-control" name="tickets[{{ $loop->index }}][quantity]" value="{{ $ticket->quantity }}" min="0" required>
+                        </div>
+                    </div>
+                </div>
+            @endforeach
         </div>
-
-        <button type="submit" class="btn btn-primary">Update Event</button>
+        <!-- <div class="mb-3">
+            <button type="button" id="addTicketButton" class="btn btn-secondary mb-3">Add Ticket</button>
+        </div> -->
+        <div class="mb-3">
+            <button type="submit" class="btn btn-primary">Update Event</button>
+        </div>
     </form>
-</div>
 @endsection

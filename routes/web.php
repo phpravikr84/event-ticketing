@@ -23,6 +23,7 @@ Route::get('/organizer/dashboard', [DashboardController::class, 'index'])->name(
 
 Route::middleware(['role:organizer'])->group(function () {
     Route::resource('events', EventController::class);
+    Route::get('/events/{id}/view', [EventController::class, 'view'])->name('events.view');
     Route::get('/tickets/sales', [OrganizerController::class, 'ticketSales'])->name('tickets.sales');
     Route::get('/attendees', [OrganizerController::class, 'attendees'])->name('attendees.index');
     Route::get('/payments', [OrganizerController::class, 'payments'])->name('payments.index');

@@ -28,6 +28,7 @@
                 <th>Title</th>
                 <th>Date</th>
                 <th>Location</th>
+                <th>Ticket Availability</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -35,8 +36,9 @@
             @foreach($events as $event)
                 <tr>
                     <td>{{ $event->title }}</td>
-                    <td>{{ $event->date }}</td>
+                    <td>{{ $event->event_date }}</td>
                     <td>{{ $event->location }}</td>
+                    <td>{{ $event->ticket_availability }}</td>
                     <td>
                         <a href="{{ route('events.edit', $event) }}" class="btn btn-warning">Edit</a>
                         <form action="{{ route('events.destroy', $event) }}" method="POST" style="display:inline-block;">
@@ -44,6 +46,7 @@
                             @method('DELETE')
                             <button class="btn btn-danger" onclick="return confirm('Are you sure?')">Cancel</button>
                         </form>
+                        <a href="{{ route('events.view', $event) }}" class="btn btn-primary">View</a>
                     </td>
                 </tr>
             @endforeach
